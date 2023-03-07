@@ -6,10 +6,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
+
+import com.example.quizlogogame.Adapters.SubLevelAdapter;
 
 public class SubLevelActivity extends AppCompatActivity {
 
     RecyclerView logoRecycler;
+    SubLevelAdapter subLevelAdapter;
 
     int pos;
 
@@ -19,9 +23,12 @@ public class SubLevelActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sub_level);
 
         pos = getIntent().getIntExtra("pos", 0);
+        ((TextView)findViewById(R.id.sub_level)).setText("Level " + (pos + 1));
 
         logoRecycler = findViewById(R.id.logoRecycler);
         logoRecycler.setLayoutManager(new GridLayoutManager(SubLevelActivity.this, 3));
+        subLevelAdapter = new SubLevelAdapter(SubLevelActivity.this, AllQuiz.ALL_QUIZ.get(pos), pos);
+        logoRecycler.setAdapter(subLevelAdapter);
 
         findViewById(R.id.backBtn2).setOnClickListener(new View.OnClickListener() {
             @Override

@@ -10,9 +10,8 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:gravity="center"
-        android:text="1"
         android:textColor="@color/white"
-        android:textSize="40sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:background="@drawable/level_button_red_circle"/>
 

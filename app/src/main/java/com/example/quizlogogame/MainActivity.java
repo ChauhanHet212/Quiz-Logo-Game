@@ -15,7 +15,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        allQuiz = new AllQuiz();
+        if (AllQuiz.ALL_QUIZ.isEmpty()) {
+            allQuiz = new AllQuiz();
+        }
 
         findViewById(R.id.playBtn).setOnClickListener(new View.OnClickListener() {
             @Override

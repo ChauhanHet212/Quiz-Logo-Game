@@ -6,11 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AllQuiz {
-//    public static final Quiz[][] ALL_QUIZ = {{new Quiz(R.drawable.ask_a, R.drawable.ask_b, "Ask"), new Quiz(R.drawable.badoo_a, R.drawable.badoo_b, "badoo"), new Quiz(R.drawable.bitcoin_a, R.drawable.bitcoin_b, "bitcoin"), new Quiz(R.drawable.buzzfeed_a, R.drawable.buzzfeed_b, "BuzzFeed"), new Quiz(R.drawable.cnet_a, R.drawable.cnet_b, "c|net")},
-//            {new Quiz(R.drawable.ask_a, R.drawable.ask_b, "Ask"), new Quiz(R.drawable.badoo_a, R.drawable.badoo_b, "badoo"), new Quiz(R.drawable.bitcoin_a, R.drawable.bitcoin_b, "bitcoin"), new Quiz(R.drawable.buzzfeed_a, R.drawable.buzzfeed_b, "BuzzFeed"), new Quiz(R.drawable.cnet_a, R.drawable.cnet_b, "c|net")},
-//            {},
-//            {},
-//            {}};
 
     public static final List<List<Quiz>> ALL_QUIZ = new ArrayList<>();
     List<Quiz> level1 = new ArrayList<>();
