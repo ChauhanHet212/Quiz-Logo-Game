@@ -31,4 +31,10 @@ public class LevelActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        levelAdapter.notifyDataSetChanged();
+    }
 }

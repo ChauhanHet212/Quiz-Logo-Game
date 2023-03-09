@@ -1,5 +1,6 @@
 package com.example.quizlogogame.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,11 +20,11 @@ import java.util.List;
 
 public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> {
 
-    Context context;
+    Activity context;
     List<List<Quiz>> allQuiz;
     SharedPreferences preferences;
 
-    public LevelAdapter(Context context, List<List<Quiz>> allQuiz) {
+    public LevelAdapter(Activity context, List<List<Quiz>> allQuiz) {
         this.context = context;
         this.allQuiz = allQuiz;
         preferences = context.getSharedPreferences("myPref", Context.MODE_PRIVATE);
@@ -53,6 +54,7 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
                     Intent intent = new Intent(context, SubLevelActivity.class);
                     intent.putExtra("pos", holder.getAdapterPosition());
                     context.startActivity(intent);
+//                    context.finish();
                 }
             });
         } else {
