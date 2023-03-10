@@ -57,7 +57,6 @@ public class SubLevelAdapter extends RecyclerView.Adapter<SubLevelAdapter.ViewHo
                 intent.putExtra("pos1", pos);
                 intent.putExtra("pos2", holder.getAdapterPosition());
                 context.startActivity(intent);
-//                context.finish();
             }
         });
     }
