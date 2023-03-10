@@ -34,7 +34,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     ViewPager viewPager;
     LinearLayout win;
 
-    int pos1, pos2, count, completedLogo, thislevellogos;
+    int pos1, pos2, count, completedLogo, thislevellogos, currentLevel;
     String logo_ans, status;
     boolean start;
     ArrayList<Character> chars = new ArrayList<>();
@@ -104,6 +104,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         completedLogo = preferences.getInt("CompletedLogos", 0);
         thislevellogos = preferences.getInt("Level" + pos1 + "TLogos", 0);
         status = preferences.getString("Level" + pos1 + "Logo" + pos2, "h");
+        currentLevel = preferences.getInt("CurrentLevel", 0);
 
         quiz_logo = view.findViewById(R.id.quiz_logo);
         clearBtn = view.findViewById(R.id.clearBtn);
@@ -275,7 +276,7 @@ public class ViewPagerAdapter extends PagerAdapter {
                 editor.putInt("CompletedLogos", completedLogo);
                 editor.putInt("Level" + pos1 + "TLogos", thislevellogos);
                 editor.putString("Level" + pos1 + "Logo" + pos2, "Win");
-                if (thislevellogos == 5){
+                if (thislevellogos >= 5 && pos1 > currentLevel){
                     editor.putInt("CurrentLevel", pos1);
                     editor.putString("Level" + pos1, "Done");
                 }

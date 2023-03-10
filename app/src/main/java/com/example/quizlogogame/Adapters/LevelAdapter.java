@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.quizlogogame.AllQuiz;
 import com.example.quizlogogame.Models.Quiz;
 import com.example.quizlogogame.R;
 import com.example.quizlogogame.SubLevelActivity;
@@ -46,7 +47,13 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
         holder.levelTxtv.setText("Level " + (position + 1));
 
         if (position == lastLevel || position == (lastLevel + 1) || status.equals("Done") || position == 0){
-            holder.level.setBackgroundResource(R.drawable.level_button_red_circle);
+            if (cLevel == allQuiz.get(position).size()){
+                holder.level.setBackgroundResource(R.drawable.level_button_green_circle);
+            } else if (cLevel >= (allQuiz.get(position).size() / 2)){
+                holder.level.setBackgroundResource(R.drawable.level_button_yellow_circle);
+            } else {
+                holder.level.setBackgroundResource(R.drawable.level_button_red_circle);
+            }
             holder.level.setText(cLevel + "/" + allQuiz.get(position).size());
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
