@@ -2,6 +2,7 @@ package com.example.quizlogogame;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -21,7 +22,7 @@ import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
 
-    ViewPager viewPager;
+    ViewPager2 viewPager;
 
     int pos1, pos2;
     ViewPagerAdapter adapter;
@@ -46,17 +47,22 @@ public class GameActivity extends AppCompatActivity {
         adapter = new ViewPagerAdapter(GameActivity.this, pos1, pos2, viewPager, true);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(pos2);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
                 ((TextView) findViewById(R.id.logo_count)).setText("logo " + (position + 1) + "/" + AllQuiz.ALL_QUIZ.get(pos1).size());
             }
 
             @Override
-            public void onPageSelected(int position) {}
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+            }
 
             @Override
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+            }
         });
     }
 }

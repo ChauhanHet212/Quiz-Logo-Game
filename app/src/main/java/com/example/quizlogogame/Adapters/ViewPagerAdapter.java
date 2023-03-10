@@ -14,8 +14,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.quizlogogame.AllQuiz;
 import com.example.quizlogogame.R;
@@ -24,15 +26,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-public class ViewPagerAdapter extends PagerAdapter {
+public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewHolder> {
 
     Activity context;
-    ImageView quiz_logo, previousBtn, nextBtn;
-    TextView[] ans = new TextView[9];
-    TextView[] btn = new TextView[14];
-    Button clearBtn, removeBtn, nextLogoBtn;
-    ViewPager viewPager;
-    LinearLayout win;
+    ViewPager2 viewPager;
 
     int pos1, pos2, count, completedLogo, thislevellogos, currentLevel;
     String logo_ans, status;
@@ -41,7 +38,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
 
-    public ViewPagerAdapter(Activity context, int pos1, int pos2, ViewPager viewPager, boolean start) {
+    public ViewPagerAdapter(Activity context, int pos1, int pos2, ViewPager2 viewPager, boolean start) {
         this.context = context;
         this.pos1 = pos1;
         this.pos2 = pos2;
@@ -51,52 +48,74 @@ public class ViewPagerAdapter extends PagerAdapter {
         editor = preferences.edit();
     }
 
-    @Override
-    public int getCount() {
-        return AllQuiz.ALL_QUIZ.get(pos1).size();
-    }
-
-    @Override
-    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-        return view == object;
-    }
-
     @NonNull
     @Override
-    public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        View view = LayoutInflater.from(context).inflate(R.layout.pager_item, container, false);
+    public ViewPagerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.pager_item, parent, false));
+    }
 
+    @Override
+    public void onBindViewHolder(@NonNull ViewPagerAdapter.ViewHolder holder, int position) {
         if (start) {
-            playGame(view, pos2);
+            playGame(holder, pos2);
         }
 
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
             }
 
             @Override
             public void onPageSelected(int position) {
-                playGame(view, position);
+                super.onPageSelected(position);
+                playGame(holder, position);
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
+                super.onPageScrollStateChanged(state);
             }
         });
-
-        container.addView(view);
-        return view;
     }
 
     @Override
-    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        container.removeView((View) object);
+    public int getItemCount() {
+        return AllQuiz.ALL_QUIZ.get(pos1).size();
     }
 
-    public void playGame(View view, int position){
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
+        ImageView quiz_logo, previousBtn, nextBtn;
+        TextView[] ans = new TextView[9];
+        TextView[] btn = new TextView[14];
+        Button clearBtn, removeBtn, nextLogoBtn;
+        LinearLayout win;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            quiz_logo = itemView.findViewById(R.id.quiz_logo);
+            clearBtn = itemView.findViewById(R.id.clearBtn);
+            removeBtn = itemView.findViewById(R.id.removeBtn);
+            nextLogoBtn = itemView.findViewById(R.id.nextLogoBtn);
+            previousBtn = itemView.findViewById(R.id.previousBtn);
+            nextBtn = itemView.findViewById(R.id.nextBtn);
+            win = itemView.findViewById(R.id.win);
+
+            for (int i = 0; i < 9; i++) {
+                int id = context.getResources().getIdentifier("ans" + i, "id", context.getPackageName());
+                ans[i] = itemView.findViewById(id);
+            }
+
+            for (int i = 0; i < 14; i++) {
+                int id = context.getResources().getIdentifier("btn" + i, "id", context.getPackageName());
+                btn[i] = itemView.findViewById(id);
+            }
+        }
+    }
+
+    public void playGame(ViewPagerAdapter.ViewHolder holder, int position){
         start = false;
 
         pos2 = position;
@@ -106,21 +125,15 @@ public class ViewPagerAdapter extends PagerAdapter {
         status = preferences.getString("Level" + pos1 + "Logo" + pos2, "h");
         currentLevel = preferences.getInt("CurrentLevel", 0);
 
-        quiz_logo = view.findViewById(R.id.quiz_logo);
-        clearBtn = view.findViewById(R.id.clearBtn);
-        removeBtn = view.findViewById(R.id.removeBtn);
-        nextLogoBtn = view.findViewById(R.id.nextLogoBtn);
-        previousBtn = view.findViewById(R.id.previousBtn);
-        nextBtn = view.findViewById(R.id.nextBtn);
-        win = view.findViewById(R.id.win);
-
-        quiz_logo.setImageResource(AllQuiz.ALL_QUIZ.get(pos1).get(pos2).getS_img());
+        holder.quiz_logo.setImageResource(AllQuiz.ALL_QUIZ.get(pos1).get(pos2).getS_img());
 
         logo_ans = AllQuiz.ALL_QUIZ.get(pos1).get(pos2).getName().toUpperCase();
+        System.out.println(logo_ans);
 
         chars.clear();
         for (int i = 0; i < logo_ans.length(); i++) {
             chars.add(logo_ans.charAt(i));
+            System.out.println(chars.get(i));
         }
 
         for (count = logo_ans.length(); count < 14; count++) {
@@ -131,26 +144,24 @@ public class ViewPagerAdapter extends PagerAdapter {
         Collections.shuffle(chars);
 
         for (int i = 0; i < 9; i++) {
-            int id = context.getResources().getIdentifier("ans" + i, "id", context.getPackageName());
-            ans[i] = view.findViewById(id);
             int finalI = i;
-            ans[i].setOnClickListener(new View.OnClickListener() {
+            holder.ans[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     for (int i = 0; i < 14; i++) {
-                        btn[i].setClickable(true);
+                        holder.btn[i].setClickable(true);
                     }
 
-                    if (!ans[finalI].getText().toString().isEmpty()) {
+                    if (!holder.ans[finalI].getText().toString().isEmpty()) {
                         for (int j = 0; j < 14; j++) {
-                            if (ans[finalI].getText().toString().equals(btn[j].getText().toString())) {
-                                if (btn[j].getVisibility() == View.INVISIBLE) {
-                                    btn[j].setVisibility(View.VISIBLE);
+                            if (holder.ans[finalI].getText().toString().equals(holder.btn[j].getText().toString())) {
+                                if (holder.btn[j].getVisibility() == View.INVISIBLE) {
+                                    holder.btn[j].setVisibility(View.VISIBLE);
                                     break;
                                 }
                             }
                         }
-                        ans[finalI].setText("");
+                        holder.ans[finalI].setText("");
                     }
                 }
             });
@@ -158,39 +169,37 @@ public class ViewPagerAdapter extends PagerAdapter {
 
         for (int i = 0; i < 9; i++) {
             if (i >= logo_ans.length()) {
-                ans[i].setVisibility(View.GONE);
+                holder.ans[i].setVisibility(View.GONE);
             }
         }
 
         for (int i = 0; i < 14; i++) {
-            int id = context.getResources().getIdentifier("btn" + i, "id", context.getPackageName());
-            btn[i] = view.findViewById(id);
-            btn[i].setText(chars.get(i).toString());
+            holder.btn[i].setText(chars.get(i).toString());
 
             int finalI = i;
-            btn[i].setOnClickListener(new View.OnClickListener() {
+            holder.btn[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String ch = btn[finalI].getText().toString();
+                    String ch = holder.btn[finalI].getText().toString();
                     for (int j = 0; j < 9; j++) {
-                        if (ans[j].getText().toString().isEmpty()) {
-                            ans[j].setText(ch);
-                            btn[finalI].setVisibility(View.INVISIBLE);
+                        if (holder.ans[j].getText().toString().isEmpty()) {
+                            holder.ans[j].setText(ch);
+                            holder.btn[finalI].setVisibility(View.INVISIBLE);
                             break;
                         }
                     }
-                    checkWin();
+                    checkWin(holder);
                 }
             });
         }
 
         if (status.equals("Win")){
-            winScreen();
+            winScreen(holder);
         } else {
-            defaultScreen();
+            defaultScreen(holder);
         }
 
-        previousBtn.setOnClickListener(new View.OnClickListener() {
+        holder.previousBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (position != 0) {
@@ -199,7 +208,7 @@ public class ViewPagerAdapter extends PagerAdapter {
             }
         });
 
-        nextBtn.setOnClickListener(new View.OnClickListener() {
+        holder.nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (position != (AllQuiz.ALL_QUIZ.get(pos1).size() - 1)) {
@@ -208,7 +217,7 @@ public class ViewPagerAdapter extends PagerAdapter {
             }
         });
 
-        nextLogoBtn.setOnClickListener(new View.OnClickListener() {
+        holder.nextLogoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (position != (AllQuiz.ALL_QUIZ.get(pos1).size() - 1)) {
@@ -217,36 +226,36 @@ public class ViewPagerAdapter extends PagerAdapter {
             }
         });
 
-        clearBtn.setOnClickListener(new View.OnClickListener() {
+        holder.clearBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 for (int i = 0; i < 9; i++) {
-                    ans[i].setText("");
+                    holder.ans[i].setText("");
                 }
                 for (int i = 0; i < 14; i++) {
-                    btn[i].setClickable(true);
-                    btn[i].setVisibility(View.VISIBLE);
+                    holder.btn[i].setClickable(true);
+                    holder.btn[i].setVisibility(View.VISIBLE);
                 }
             }
         });
 
-        removeBtn.setOnClickListener(new View.OnClickListener() {
+        holder.removeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 for (int i = 0; i < 14; i++) {
-                    btn[i].setClickable(true);
+                    holder.btn[i].setClickable(true);
                 }
                 for (int i = 8; i >= 0; i--) {
-                    if (!ans[i].getText().toString().isEmpty()) {
+                    if (!holder.ans[i].getText().toString().isEmpty()) {
                         for (int j = 0; j < 14; j++) {
-                            if (ans[i].getText().toString().equals(btn[j].getText().toString())) {
-                                if (btn[j].getVisibility() == View.INVISIBLE) {
-                                    btn[j].setVisibility(View.VISIBLE);
+                            if (holder.ans[i].getText().toString().equals(holder.btn[j].getText().toString())) {
+                                if (holder.btn[j].getVisibility() == View.INVISIBLE) {
+                                    holder.btn[j].setVisibility(View.VISIBLE);
                                     break;
                                 }
                             }
                         }
-                        ans[i].setText("");
+                        holder.ans[i].setText("");
                         break;
                     }
                 }
@@ -254,18 +263,18 @@ public class ViewPagerAdapter extends PagerAdapter {
         });
     }
 
-    public void checkWin() {
+    public void checkWin(ViewPagerAdapter.ViewHolder holder) {
         int j = 0;
         int k = 0;
         for (int i = 0; i < logo_ans.length(); i++) {
-            if (ans[i].getText().toString().isEmpty()) {
+            if (holder.ans[i].getText().toString().isEmpty()) {
                 j++;
             }
         }
 
         if (j == 0) {
             for (int i = 0; i < logo_ans.length(); i++) {
-                if (ans[i].getText().toString().charAt(0) != logo_ans.charAt(i)) {
+                if (holder.ans[i].getText().toString().charAt(0) != logo_ans.charAt(i)) {
                     k++;
                 }
             }
@@ -281,10 +290,10 @@ public class ViewPagerAdapter extends PagerAdapter {
                     editor.putString("Level" + pos1, "Done");
                 }
                 editor.commit();
-                winScreen();
+                winScreen(holder);
             } else {
                 for (int i = 0; i < 14; i++) {
-                    btn[i].setClickable(false);
+                    holder.btn[i].setClickable(false);
                 }
                 Dialog dialog = new Dialog(context);
                 dialog.setCancelable(false);
@@ -303,31 +312,31 @@ public class ViewPagerAdapter extends PagerAdapter {
         }
     }
 
-    public void winScreen(){
+    public void winScreen(ViewPagerAdapter.ViewHolder holder){
         for (int i = 0; i < logo_ans.length(); i++) {
-            ans[i].setVisibility(View.INVISIBLE);
+            holder.ans[i].setVisibility(View.INVISIBLE);
         }
         for (int i = 0; i < 14; i++) {
-            btn[i].setVisibility(View.INVISIBLE);
+            holder.btn[i].setVisibility(View.INVISIBLE);
         }
-        clearBtn.setVisibility(View.INVISIBLE);
-        removeBtn.setVisibility(View.INVISIBLE);
-        quiz_logo.setImageResource(AllQuiz.ALL_QUIZ.get(pos1).get(pos2).getE_img());
+        holder.clearBtn.setVisibility(View.INVISIBLE);
+        holder.removeBtn.setVisibility(View.INVISIBLE);
+        holder.quiz_logo.setImageResource(AllQuiz.ALL_QUIZ.get(pos1).get(pos2).getE_img());
 
-        win.setVisibility(View.VISIBLE);
+        holder.win.setVisibility(View.VISIBLE);
     }
 
-    public void defaultScreen(){
+    public void defaultScreen(ViewPagerAdapter.ViewHolder holder){
         for (int i = 0; i < logo_ans.length(); i++) {
-            ans[i].setVisibility(View.VISIBLE);
+            holder.ans[i].setVisibility(View.VISIBLE);
         }
         for (int i = 0; i < 14; i++) {
-            btn[i].setVisibility(View.VISIBLE);
+            holder.btn[i].setVisibility(View.VISIBLE);
         }
-        clearBtn.setVisibility(View.VISIBLE);
-        removeBtn.setVisibility(View.VISIBLE);
-        quiz_logo.setImageResource(AllQuiz.ALL_QUIZ.get(pos1).get(pos2).getS_img());
+        holder.clearBtn.setVisibility(View.VISIBLE);
+        holder.removeBtn.setVisibility(View.VISIBLE);
+        holder.quiz_logo.setImageResource(AllQuiz.ALL_QUIZ.get(pos1).get(pos2).getS_img());
 
-        win.setVisibility(View.GONE);
+        holder.win.setVisibility(View.GONE);
     }
 }
