@@ -33,17 +33,15 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
 
     int pos1, pos2, count, completedLogo, thislevellogos, currentLevel;
     String logo_ans, status;
-    boolean start;
     ArrayList<Character> chars = new ArrayList<>();
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
 
-    public ViewPagerAdapter(Activity context, int pos1, int pos2, ViewPager2 viewPager, boolean start) {
+    public ViewPagerAdapter(Activity context, int pos1, int pos2, ViewPager2 viewPager) {
         this.context = context;
         this.pos1 = pos1;
         this.pos2 = pos2;
         this.viewPager = viewPager;
-        this.start = start;
         preferences = context.getSharedPreferences("myPref", MODE_PRIVATE);
         editor = preferences.edit();
     }
@@ -51,7 +49,11 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
     @NonNull
     @Override
     public ViewPagerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.pager_item, parent, false));
+        ViewHolder holder = new ViewHolder(LayoutInflater.from(context).inflate(R.layout.pager_item, parent, false));
+
+        playGame(holder, pos2);
+
+        return holder;
     }
 
     @Override
@@ -116,8 +118,6 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
     }
 
     public void playGame(ViewPagerAdapter.ViewHolder holder, int position){
-        start = false;
-
         pos2 = position;
 
         completedLogo = preferences.getInt("CompletedLogos", 0);
