@@ -44,7 +44,7 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
-        adapter = new ViewPagerAdapter(GameActivity.this, pos1, pos2, viewPager, true);
+        adapter = new ViewPagerAdapter(GameActivity.this, pos1, pos2, viewPager);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(pos2);
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
