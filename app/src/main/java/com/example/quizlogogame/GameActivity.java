@@ -46,7 +46,7 @@ public class GameActivity extends AppCompatActivity {
 
         adapter = new ViewPagerAdapter(GameActivity.this, pos1, pos2, viewPager);
         viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(pos2);
+        viewPager.setCurrentItem(pos2, false);
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
